@@ -1,0 +1,65 @@
+openapi: 3.0.0
+info:
+  title: かんたん株価API
+  description: リクエストの検証にはそれぞれの環境で払い出したクライアントIDが必要です
+  version: 1.0.0
+servers:
+  - url: https://kantankabuka-dev-qtmla4jaeq-an.a.run.app
+    description: Production server
+  - url: https://kantankabuka-dev-qtmla4jaeq-an.a.run.app
+    description: Staging server
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT # 表示にJWTを指定
+security:
+  - BearerAuth: [] # 全体にJWT認証を要求する設定
+paths:
+  /calculation:
+    post:
+      summary: 株価の試算
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: string
+              example: >-
+                "{\n  \"step1\": {\n    \"primaryIndustry\": \"B\",\n
+                \"secondaryIndustry\": \"3\",\n    \"tertiaryIndustry\":
+                \"31\",\n    \"allStock\": 10,\n    \"treasuryStock\": 9,\n
+                \"isFoundedRecently\": false,\n    \"isGoingClose\": false,\n
+                \"isOverHalfStock\": false\n  },\n  \"step2\": {\n
+                \"latestAsset\": 9,\n    \"latestDebt\": 0,\n
+                \"latestSales\": 0,\n    \"fulltimeNumber\": 0,\n
+                \"parttimeNumber\": 0\n  },\n  \"step3\": {\n
+                \"prev1Dividend\": 0,\n    \"prev1Income\": 0,\n
+                \"prev1LossDeduction\": 0,\n    \"prev1Capital\": 0,\n
+                \"prev1ProfitReserve\": 0,\n    \"prev2Capital\": 0,\n
+                \"prev2Dividend\": 0,\n    \"prev2Income\": 0,\n
+                \"prev2LossDeduction\": 0,\n    \"prev2ProfitReserve\": 0,\n
+                \"prev3Dividend\": 0,\n    \"prev3Income\": 0,\n
+                \"prev3LossDeduction\": 0\n  },\n  \"step4\": {\n
+                \"prefecture\": \"\",\n    \"position\": \"\",\n
+                \"generation\": \"\",\n    \"succession10Years\": false,\n
+                \"relativeHasStock\": false,\n    \"worryInheritanceTax\":
+                false\n  },\n  \"step5\": {\n    \"futureIncomes\": [0, 0, 0, 0,
+                0, 0, 0, 0, 0],\n    \"futureMeasures\": [0, 0, 0, 0, 0, 0, 0,
+                0, 0]\n  }\n}\n"
+      parameters:
+        - name: Authorization
+          in: header
+          schema:
+            type: string
+          example: '{{set token}}'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+        '400':
+          description: Bad Request - Invalid input data
+        '401':
+          description: Unauthorized - JWT token missing or invalid
