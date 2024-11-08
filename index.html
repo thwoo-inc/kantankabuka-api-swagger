@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>API Documentation</title>
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://unpkg.com/swagger-ui-dist@3/swagger-ui.css"
+    />
+    <script src="https://unpkg.com/swagger-ui-dist@3/swagger-ui-bundle.js"></script>
+    <script src="https://unpkg.com/swagger-ui-dist@3/swagger-ui-standalone-preset.js"></script>
+  </head>
+  <body>
+    <div id="swagger-ui"></div>
+    <script>
+      window.onload = () => {
+        const ui = SwaggerUIBundle({
+          url: './openapi.yml', // OpenAPI YAMLファイルのパス
+          dom_id: '#swagger-ui',
+          presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
+          layout: 'StandaloneLayout',
+          requestInterceptor: (req) => {
+            const token = sessionStorage.getItem('jwtToken'); // JWTトークンをセッションから取得
+            if (token) {
+              req.headers['Authorization'] = `Bearer ${token}`;
+            }
+            return req;
+          },
+        });
+
+        ui.initOAuth({
+          clientId: 'your-client-id',
+          clientSecret: 'your-client-secret',
+          realm: 'your-realms',
+          appName: 'your-app-name',
+          scopeSeparator: ' ',
+          scopes: 'openid profile email',
+          additionalQueryStringParams: {},
+        });
+
+        document.getElementById('authorizeButton').onclick = () => {
+          const jwtToken = prompt('Enter your JWT token'); // トークン入力をプロンプトで取得
+          if (jwtToken) {
+            sessionStorage.setItem('jwtToken', jwtToken); // セッションストレージにトークンを保存
+          }
+        };
+      };
+    </script>
+    <button id="authorizeButton">Authorize</button>
+    <!-- トークン入力ボタン -->
+  </body>
+</html>
