@@ -48,12 +48,6 @@ paths:
                 false\n  },\n  \"step5\": {\n    \"futureIncomes\": [0, 0, 0, 0,
                 0, 0, 0, 0, 0],\n    \"futureMeasures\": [0, 0, 0, 0, 0, 0, 0,
                 0, 0]\n  }\n}\n"
-      parameters:
-        - name: Authorization
-          in: header
-          schema:
-            type: string
-          example: '{{set token}}'
       responses:
         '200':
           description: Successful response
