@@ -1,59 +1,366 @@
 openapi: 3.0.0
 info:
-  title: かんたん株価API
-  description: リクエストの検証にはそれぞれの環境で払い出したクライアントIDが必要です
+  title: かんたん株価試算 API
+  description:
+    # リクエストの検証にはそれぞれの環境で払い出したクライアントIDとクライアントが必要です
   version: 1.0.0
 servers:
-  - url: https://kantankabuka-dev-qtmla4jaeq-an.a.run.app
-    description: Production server
-  - url: https://kantankabuka-dev-qtmla4jaeq-an.a.run.app
-    description: Staging server
-components:
-  securitySchemes:
-    BearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT # 表示にJWTを指定
+  - url: http://localhost:8080
+    description: Local server
 security:
   - BearerAuth: [] # 全体にJWT認証を要求する設定
 paths:
-  /calculation:
+  /check_required_prev3:
     post:
-      summary: 株価の試算
+      summary: 株価試算に前三期分のデータが必要かの確認
+      parameters:
+        - in: header
+          name: Content-Type
+          schema:
+            type: string
+            default: application/json
+        - in: header
+          name: Kankabu-Client-ID
+          schema:
+            type: string
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              type: string
-              example: >-
-                "{\n  \"step1\": {\n    \"primaryIndustry\": \"B\",\n
-                \"secondaryIndustry\": \"3\",\n    \"tertiaryIndustry\":
-                \"31\",\n    \"allStock\": 10,\n    \"treasuryStock\": 9,\n
-                \"isFoundedRecently\": false,\n    \"isGoingClose\": false,\n
-                \"isOverHalfStock\": false\n  },\n  \"step2\": {\n
-                \"latestAsset\": 9,\n    \"latestDebt\": 0,\n
-                \"latestSales\": 0,\n    \"fulltimeNumber\": 0,\n
-                \"parttimeNumber\": 0\n  },\n  \"step3\": {\n
-                \"prev1Dividend\": 0,\n    \"prev1Income\": 0,\n
-                \"prev1LossDeduction\": 0,\n    \"prev1Capital\": 0,\n
-                \"prev1ProfitReserve\": 0,\n    \"prev2Capital\": 0,\n
-                \"prev2Dividend\": 0,\n    \"prev2Income\": 0,\n
-                \"prev2LossDeduction\": 0,\n    \"prev2ProfitReserve\": 0,\n
-                \"prev3Dividend\": 0,\n    \"prev3Income\": 0,\n
-                \"prev3LossDeduction\": 0\n  },\n  \"step4\": {\n
-                \"prefecture\": \"\",\n    \"position\": \"\",\n
-                \"generation\": \"\",\n    \"succession10Years\": false,\n
-                \"relativeHasStock\": false,\n    \"worryInheritanceTax\":
-                false\n  },\n  \"step5\": {\n    \"futureIncomes\": [0, 0, 0, 0,
-                0, 0, 0, 0, 0],\n    \"futureMeasures\": [0, 0, 0, 0, 0, 0, 0,
-                0, 0]\n  }\n}\n"
+              $ref: '#/components/schemas/body_check_required_prev3'
+            examples:
+              example1:
+                $ref: '#/components/examples/example_check_required_prev3_true'
+              example2:
+                $ref: '#/components/examples/example_check_required_prev3_false'
       responses:
         '200':
           description: Successful response
           content:
-            application/json: {}
+            application/json:
+              schema:
+                $ref: '#/components/schemas/response_ok_check_required_prev3'
+              examples:
+                example1:
+                  $ref: '#/components/examples/response_example1'
+                example2:
+                  $ref: '#/components/examples/response_example2'
         '400':
           description: Bad Request - Invalid input data
         '401':
           description: Unauthorized - JWT token missing or invalid
+        '500':
+          description: Internal Server Error
+  /calculation:
+    post:
+      summary: 株価試算
+      parameters:
+        - in: header
+          name: Content-Type
+          schema:
+            type: string
+            default: application/json
+        - in: header
+          name: Kankabu-Client-ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/body_calculation'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/response_ok_calculation'
+        '400':
+          description: Bad Request - Invalid input data
+        '401':
+          description: Unauthorized - JWT token missing or invalid
+        '500':
+          description: Internal Server Error
+  /transition:
+    post:
+      summary: 株価推移
+      parameters:
+        - in: header
+          name: Content-Type
+          schema:
+            type: string
+            default: application/json
+        - in: header
+          name: Kankabu-Client-ID
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/body_transition'
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/response_ok_transition'
+        '400':
+          description: Bad Request - Invalid input data
+        '401':
+          description: Unauthorized - JWT token missing or invalid
+        '500':
+          description: Internal Server Error
+components:
+  schemas:
+    body_check_required_prev3:
+      type: object
+      properties:
+        primaryIndustry:
+          type: string
+        secondaryIndustry:
+          type: string
+        tertiaryIndustry:
+          type: string
+        allStock:
+          type: integer
+        treasuryStock:
+          type: integer
+        isFoundedRecently:
+          type: boolean
+        isGoingClose:
+          type: boolean
+    body_calculation:
+      type: object
+      properties:
+        step1:
+          $ref: '#/components/schemas/step1'
+        step2:
+          $ref: '#/components/schemas/step2'
+        step3:
+          $ref: '#/components/schemas/step3'
+    body_transition:
+      type: object
+      properties:
+        step1:
+          $ref: '#/components/schemas/step1'
+        step2:
+          $ref: '#/components/schemas/step2'
+        step3:
+          $ref: '#/components/schemas/step3'
+        step4:
+          $ref: '#/components/schemas/step4'
+        step5:
+          $ref: '#/components/schemas/step5'
+    step1:
+      type: object
+      properties:
+        primaryIndustry:
+          type: string
+          example: 'B'
+        secondaryIndustry:
+          type: string
+          example: '3'
+        tertiaryIndustry:
+          type: string
+          example: '31'
+        allStock:
+          type: integer
+    step2:
+      type: object
+      properties:
+        latestAsset:
+          type: integer
+          example: 9
+        latestDebt:
+          type: integer
+          example: 0
+        latestSales:
+          type: integer
+          example: 0
+        fulltimeNumber:
+          type: integer
+          example: 0
+        parttimeNumber:
+          type: integer
+          example: 0
+    step3:
+      type: object
+      properties:
+        prev1Dividend:
+          type: integer
+          example: 0
+        prev1Income:
+          type: integer
+          example: 0
+        prev1LossDeduction:
+          type: integer
+          example: 0
+        prev1Capital:
+          type: integer
+          example: 0
+        prev1ProfitReserve:
+          type: integer
+          example: 0
+        prev2Capital:
+          type: integer
+          example: 0
+        prev2Dividend:
+          type: integer
+          example: 0
+        prev2Income:
+          type: integer
+          example: 0
+        prev2LossDeduction:
+          type: integer
+          example: 0
+        prev2ProfitReserve:
+          type: integer
+          example: 0
+        prev3Dividend:
+          type: integer
+          example: 0
+        prev3Income:
+          type: integer
+          example: 0
+        prev3LossDeduction:
+          type: integer
+          example: 0
+    step4:
+      type: object
+      properties:
+        succession10Years:
+          type: boolean
+          example: false
+        relativeHasStock:
+          type: boolean
+          example: false
+        worryInheritanceTax:
+          type: boolean
+          example: false
+    step5:
+      type: object
+      properties:
+        futureIncomes:
+          type: array
+          items:
+            type: integer
+            example: [0, 0, 0, 0, 0, 0, 0, 0, 0]
+        futureMeasures:
+          type: array
+          items:
+            type: integer
+            example: [0, 0, 0, 0, 0, 0, 0, 0, 0]
+    response_ok_check_required_prev3:
+      type: object
+      properties:
+        message:
+          type: string
+          example: 'Calculation successful'
+        data:
+          type: object
+          properties:
+            result:
+              type: number
+              example: 123.45
+    response_ok_calculation:
+      type: object
+      properties:
+        result:
+          type: object
+          properties:
+            result:
+              type: number
+              example: 123.45
+    response_ok_transition:
+      type: object
+      properties:
+        result:
+          type: object
+          properties:
+            result:
+              type: number
+              example: 123.45
+  examples:
+    example_check_required_prev3_true:
+      summary: 前三期分のデータが必要
+      value:
+        step1:
+          primaryIndustry: 'K'
+          secondaryIndustry: '69'
+          tertiaryIndustry: ''
+          allStock: 10000
+          treasuryStock: 0
+          isFoundedRecently: false
+          isGoingClose: false
+          isOverHalfStock: false
+        step2:
+          latestAsset: 30000
+          latestDebt: 10000
+          latestSales: 50000
+          fulltimeNumber: 0
+          parttimeNumber: 0
+        step3:
+          prev1Dividend:
+          prev1Income: 0
+          prev1LossDeduction: 0
+          prev1Capital: 1000
+          prev1ProfitReserve: 0
+          prev2Dividend: 0
+          prev2Income: 0
+          prev2LossDeduction: 0
+          prev2Capital: 1000
+          prev2ProfitReserve: 0
+          prev3Dividend: 0
+          prev3Income: 0
+          prev3LossDeduction: 0
+    example_check_required_prev3_false:
+      summary: 前三期分のデータが必要ではない
+      value:
+        step1:
+          primaryIndustry: 'K'
+          secondaryIndustry: '69'
+          tertiaryIndustry: ''
+          allStock: 10000
+          treasuryStock: 0
+          isFoundedRecently: false
+          isGoingClose: false
+          isOverHalfStock: false
+        step2:
+          latestAsset: 80000
+          latestDebt: 30000
+          latestSales: 100000
+          fulltimeNumber: 20
+          parttimeNumber: 0
+        step3:
+          prev1Dividend: 0
+          prev1Income: 10000
+          prev1LossDeduction: 0
+          prev1Capital: 1000
+          prev1ProfitReserve: 268375
+          prev2Dividend: 1000
+          prev2Income: 10000
+          prev2LossDeduction: 0
+          prev2Capital: 1000
+          prev2ProfitReserve: 268375
+          prev3Dividend: 1000
+          prev3Income: 10000
+          prev3LossDeduction: 1000
+    response_example1:
+      summary: 前三期分のデータが必要
+      value:
+        result: true
+    response_example2:
+      summary: 前三期分のデータが必要ではない
+      value:
+        result: false
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT # 表示にJWTを指定
