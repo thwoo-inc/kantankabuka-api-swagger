@@ -1,11 +1,12 @@
 openapi: 3.0.0
 info:
   title: かんたん株価試算 API
-  description:
-    # リクエストの検証にはそれぞれの環境で払い出したクライアントIDとクライアントが必要です
+  description: リクエストにはクライアントIDとクライアントシークレットを用いたがJWT認証が必要です
   version: 1.0.0
 servers:
-  - url: http://localhost:8080
+  - url: https://kantankabuka-external-api-722937962589.asia-northeast1.run.app/v1
+    description: Tendems
+  - url: http://localhost:8080/v1
     description: Local server
 security:
   - BearerAuth: [] # 全体にJWT認証を要求する設定
@@ -169,6 +170,10 @@ components:
         tertiaryIndustry:
           type: string
           example: '31'
+        forthIndustry:
+          type:
+            enum: [311, 312, 313]
+          example: 311
         allStock:
           type: integer
     step2:
@@ -294,6 +299,7 @@ components:
           primaryIndustry: 'K'
           secondaryIndustry: '69'
           tertiaryIndustry: ''
+          forthIndustry: 311
           allStock: 10000
           treasuryStock: 0
           isFoundedRecently: false
