@@ -6,6 +6,8 @@ info:
 servers:
   - url: https://kantankabuka-external-api-722937962589.asia-northeast1.run.app/v1
     description: Tendems
+  - url: https://external-api-tandems.kantankabuka.com/v1
+    description: Tendems
   - url: http://localhost:8080/v1
     description: Local server
 security:
@@ -122,43 +124,58 @@ components:
     body_check_required_prev3:
       type: object
       properties:
-        primaryIndustry:
-          type: string
-        secondaryIndustry:
-          type: string
-        tertiaryIndustry:
-          type: string
-        allStock:
-          type: integer
-        treasuryStock:
-          type: integer
-        isFoundedRecently:
-          type: boolean
-        isGoingClose:
-          type: boolean
+        company:
+          $ref: '#/components/schemas/company'
+        settlements:
+          type: array
+          items:
+            $ref: '#/components/schemas/settlement'
     body_calculation:
       type: object
       properties:
-        step1:
-          $ref: '#/components/schemas/step1'
-        step2:
-          $ref: '#/components/schemas/step2'
-        step3:
-          $ref: '#/components/schemas/step3'
+        company:
+          $ref: '#/components/schemas/company'
+        stockHolders:
+          type: array
+          items:
+            $ref: '#/components/schemas/stockHolder'
+        settlements:
+          type: array
+          items:
+            $ref: '#/components/schemas/settlement'
+        financial:
+          $ref: '#/components/schemas/financial'
     body_transition:
       type: object
       properties:
-        step1:
-          $ref: '#/components/schemas/step1'
-        step2:
-          $ref: '#/components/schemas/step2'
-        step3:
-          $ref: '#/components/schemas/step3'
-        step4:
-          $ref: '#/components/schemas/step4'
-        step5:
-          $ref: '#/components/schemas/step5'
-    step1:
+        company:
+          $ref: '#/components/schemas/company'
+        stockHolders:
+          type: array
+          items:
+            $ref: '#/components/schemas/stockHolder'
+        settlements:
+          type: array
+          items:
+            $ref: '#/components/schemas/settlement'
+        financial:
+          $ref: '#/components/schemas/financial'
+        futures:
+          type: array
+          items:
+            $ref: '#/components/schemas/future'
+        calculationResult:
+          $ref: '#/components/schemas/calculationResult'
+    financial:
+      type: object
+      properties:
+        year:
+          type: integer
+          example: 2025
+        month:
+          type: integer
+          example: 1
+    company:
       type: object
       properties:
         primaryIndustry:
@@ -176,9 +193,6 @@ components:
           example: 311
         allStock:
           type: integer
-    step2:
-      type: object
-      properties:
         latestAsset:
           type: integer
           example: 9
@@ -194,73 +208,51 @@ components:
         parttimeNumber:
           type: integer
           example: 0
-    step3:
+    settlement:
       type: object
       properties:
-        prev1Dividend:
+        dividend:
           type: integer
           example: 0
-        prev1Income:
+        income:
           type: integer
           example: 0
-        prev1LossDeduction:
+        lossDeduction:
           type: integer
           example: 0
-        prev1Capital:
+        capital:
           type: integer
           example: 0
-        prev1ProfitReserve:
+        profitReserve:
           type: integer
           example: 0
-        prev2Capital:
-          type: integer
-          example: 0
-        prev2Dividend:
-          type: integer
-          example: 0
-        prev2Income:
-          type: integer
-          example: 0
-        prev2LossDeduction:
-          type: integer
-          example: 0
-        prev2ProfitReserve:
-          type: integer
-          example: 0
-        prev3Dividend:
-          type: integer
-          example: 0
-        prev3Income:
-          type: integer
-          example: 0
-        prev3LossDeduction:
-          type: integer
-          example: 0
-    step4:
+    future:
       type: object
       properties:
-        succession10Years:
-          type: boolean
-          example: false
-        relativeHasStock:
-          type: boolean
-          example: false
-        worryInheritanceTax:
-          type: boolean
-          example: false
-    step5:
+        income:
+          type: integer
+          example: 0
+        measure:
+          type: integer
+          example: 0
+    stockHolder:
       type: object
       properties:
-        futureIncomes:
-          type: array
-          items:
-            type: integer
-            example: [0, 0, 0, 0, 0, 0, 0, 0, 0]
-        futureMeasures:
-          type: array
-          items:
-            type: integer
-            example: [0, 0, 0, 0, 0, 0, 0, 0, 0]
+        stockNumber:
+          type: integer
+          example: 10000
+        stockRate:
+          type: number
+          example: 50.0
+        evaluationType:
+          type: string
+          example: 'A'
+        evaluationTypeText:
+          type: string
+          example: '原則（相続税評価額)'
+        amount:
+          type: integer
+          example: 500000
     response_ok_check_required_prev3:
       type: object
       properties:
@@ -276,26 +268,54 @@ components:
     response_ok_calculation:
       type: object
       properties:
-        result:
-          type: object
-          properties:
-            result:
-              type: number
-              example: 123.45
+        calculationResult:
+          $ref: '#/components/schemas/calculationResult'
+        stockHolders:
+          type: array
+          items:
+            $ref: '#/components/schemas/stockHolder'
+        simulatorIndustoryPeriod:
+          type: string
+          example: '2025-01-07T00:00:00Z'
     response_ok_transition:
       type: object
       properties:
-        result:
-          type: object
-          properties:
-            result:
-              type: number
-              example: 123.45
+        transitionResult:
+          $ref: '#/components/schemas/transitionResult'
+        stockHolders:
+          type: array
+          items:
+            $ref: '#/components/schemas/stockHolder'
+        simulatorIndustoryPeriod:
+          type: string
+          example: '2025-01-07T00:00:00Z'
+    calculationResult:
+      type: object
+      properties:
+        stockOne:
+          type: number
+          example: 5000
+        stockAll:
+          type: number
+          example: 100000
+    transitionResult:
+      type: object
+      properties:
+        companyScales:
+          type: array
+          items:
+            type: string
+          example: ['A', 'B', 'C']
+        netAssetValues:
+          type: array
+          items:
+            type: number
+            example: [0.0, 0.0, 0.0]
   examples:
     example_check_required_prev3_true:
       summary: 前三期分のデータが必要
       value:
-        step1:
+        company:
           primaryIndustry: 'K'
           secondaryIndustry: '69'
           tertiaryIndustry: ''
@@ -305,30 +325,21 @@ components:
           isFoundedRecently: false
           isGoingClose: false
           isOverHalfStock: false
-        step2:
           latestAsset: 30000
           latestDebt: 10000
           latestSales: 50000
           fulltimeNumber: 0
           parttimeNumber: 0
-        step3:
-          prev1Dividend:
-          prev1Income: 0
-          prev1LossDeduction: 0
-          prev1Capital: 1000
-          prev1ProfitReserve: 0
-          prev2Dividend: 0
-          prev2Income: 0
-          prev2LossDeduction: 0
-          prev2Capital: 1000
-          prev2ProfitReserve: 0
-          prev3Dividend: 0
-          prev3Income: 0
-          prev3LossDeduction: 0
+        settlements:
+          [
+            { dividend: 0, income: 0, lossDeduction: 0, capital: 1000, profitReserve: 0 },
+            { dividend: 0, income: 0, lossDeduction: 0, capital: 1000, profitReserve: 0 },
+            { dividend: 0, income: 0, lossDeduction: 0, capital: 1000, profitReserve: 0 },
+          ]
     example_check_required_prev3_false:
       summary: 前三期分のデータが必要ではない
       value:
-        step1:
+        company:
           primaryIndustry: 'K'
           secondaryIndustry: '69'
           tertiaryIndustry: ''
@@ -337,26 +348,23 @@ components:
           isFoundedRecently: false
           isGoingClose: false
           isOverHalfStock: false
-        step2:
           latestAsset: 80000
           latestDebt: 30000
           latestSales: 100000
           fulltimeNumber: 20
           parttimeNumber: 0
-        step3:
-          prev1Dividend: 0
-          prev1Income: 10000
-          prev1LossDeduction: 0
-          prev1Capital: 1000
-          prev1ProfitReserve: 268375
-          prev2Dividend: 1000
-          prev2Income: 10000
-          prev2LossDeduction: 0
-          prev2Capital: 1000
-          prev2ProfitReserve: 268375
-          prev3Dividend: 1000
-          prev3Income: 10000
-          prev3LossDeduction: 1000
+        settlements:
+          [
+            { dividend: 0, income: 10000, lossDeduction: 0, capital: 1000, profitReserve: 268375 },
+            {
+              dividend: 1000,
+              income: 10000,
+              lossDeduction: 0,
+              capital: 1000,
+              profitReserve: 268375,
+            },
+            { dividend: 1000, income: 10000, lossDeduction: 1000, capital: 1000, profitReserve: 0 },
+          ]
     response_example1:
       summary: 前三期分のデータが必要
       value:
