@@ -183,14 +183,10 @@ components:
           example: 'B'
         secondaryIndustry:
           type: string
-          example: '3'
+          example: '31'
         tertiaryIndustry:
           type: string
-          example: '31'
-        forthIndustry:
-          type:
-            enum: [311, 312, 313]
-          example: 311
+          example: '311'
         allStock:
           type: integer
         latestAsset:
@@ -319,7 +315,6 @@ components:
           primaryIndustry: 'K'
           secondaryIndustry: '69'
           tertiaryIndustry: ''
-          forthIndustry: 311
           allStock: 10000
           treasuryStock: 0
           isFoundedRecently: false
