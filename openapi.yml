@@ -17,15 +17,8 @@ paths:
     post:
       summary: 株価試算に前三期分のデータが必要かの確認
       parameters:
-        - in: header
-          name: Content-Type
-          schema:
-            type: string
-            default: application/json
-        - in: header
-          name: Kantankabuka-Client-ID
-          schema:
-            type: string
+        - $ref: '#/components/parameters/Content-Type'
+        - $ref: '#/components/parameters/Kantankabuka-Client-ID'
       requestBody:
         required: true
         content:
@@ -50,15 +43,8 @@ paths:
     post:
       summary: 株価試算
       parameters:
-        - in: header
-          name: Content-Type
-          schema:
-            type: string
-            default: application/json
-        - in: header
-          name: Kantankabuka-Client-ID
-          schema:
-            type: string
+        - $ref: '#/components/parameters/Content-Type'
+        - $ref: '#/components/parameters/Kantankabuka-Client-ID'
       requestBody:
         required: true
         content:
@@ -82,15 +68,8 @@ paths:
     post:
       summary: 株価推移
       parameters:
-        - in: header
-          name: Content-Type
-          schema:
-            type: string
-            default: application/json
-        - in: header
-          name: Kantankabuka-Client-ID
-          schema:
-            type: string
+        - $ref: '#/components/parameters/Content-Type'
+        - $ref: '#/components/parameters/Kantankabuka-Client-ID'
       requestBody:
         required: true
         content:
@@ -111,6 +90,20 @@ paths:
         '500':
           $ref: '#/components/responses/response500'
 components:
+  parameters:
+    Content-Type:
+      name: Content-Type
+      in: header
+      required: true
+      schema:
+        type: string
+        default: application/json
+    Kantankabuka-Client-ID:
+      name: Kantankabuka-Client-ID
+      in: header
+      required: true
+      schema:
+        type: string
   schemas:
     body_check_required_prev3:
       type: object
@@ -304,12 +297,18 @@ components:
             type: number
             example: [0.0, 0.0, 0.0]
   responses:
-    response200_calculation:
-      description: Successful response
+    response200_check_required_prev3:
+      description: check_required_prev3の正常系レスポンスです。
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/response_ok_check_required_prev3'
+            type: boolean
+    response200_calculation:
+      description: calculationの正常系レスポンスです。
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/response_ok_calculation'
           examples:
             example1:
               $ref: '#/components/examples/response_example1'
