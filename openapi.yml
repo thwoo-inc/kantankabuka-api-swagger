@@ -23,7 +23,7 @@ paths:
             type: string
             default: application/json
         - in: header
-          name: Kankabu-Client-ID
+          name: Kantankabuka-Client-ID
           schema:
             type: string
       requestBody:
@@ -39,22 +39,13 @@ paths:
                 $ref: '#/components/examples/example_check_required_prev3_false'
       responses:
         '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/response_ok_check_required_prev3'
-              examples:
-                example1:
-                  $ref: '#/components/examples/response_example1'
-                example2:
-                  $ref: '#/components/examples/response_example2'
+          $ref: '#/components/responses/response200_check_required_prev3'
         '400':
-          description: Bad Request - Invalid input data
+          $ref: '#/components/responses/response400'
         '401':
-          description: Unauthorized - JWT token missing or invalid
+          $ref: '#/components/responses/response401'
         '500':
-          description: Internal Server Error
+          $ref: '#/components/responses/response500'
   /calculation:
     post:
       summary: 株価試算
@@ -65,7 +56,7 @@ paths:
             type: string
             default: application/json
         - in: header
-          name: Kankabu-Client-ID
+          name: Kantankabuka-Client-ID
           schema:
             type: string
       requestBody:
@@ -82,11 +73,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/response_ok_calculation'
         '400':
-          description: Bad Request - Invalid input data
+          $ref: '#/components/responses/response400'
         '401':
-          description: Unauthorized - JWT token missing or invalid
+          $ref: '#/components/responses/response401'
         '500':
-          description: Internal Server Error
+          $ref: '#/components/responses/response500'
   /transition:
     post:
       summary: 株価推移
@@ -97,7 +88,7 @@ paths:
             type: string
             default: application/json
         - in: header
-          name: Kankabu-Client-ID
+          name: Kantankabuka-Client-ID
           schema:
             type: string
       requestBody:
@@ -114,11 +105,11 @@ paths:
               schema:
                 $ref: '#/components/schemas/response_ok_transition'
         '400':
-          description: Bad Request - Invalid input data
+          $ref: '#/components/responses/response400'
         '401':
-          description: Unauthorized - JWT token missing or invalid
+          $ref: '#/components/responses/response401'
         '500':
-          description: Internal Server Error
+          $ref: '#/components/responses/response500'
 components:
   schemas:
     body_check_required_prev3:
@@ -135,31 +126,31 @@ components:
       properties:
         company:
           $ref: '#/components/schemas/company'
-        stockHolders:
-          type: array
-          items:
-            $ref: '#/components/schemas/stockHolder'
         settlements:
           type: array
           items:
             $ref: '#/components/schemas/settlement'
         financial:
           $ref: '#/components/schemas/financial'
+        stockHolders:
+          type: array
+          items:
+            $ref: '#/components/schemas/stockHolder'
     body_transition:
       type: object
       properties:
         company:
           $ref: '#/components/schemas/company'
-        stockHolders:
-          type: array
-          items:
-            $ref: '#/components/schemas/stockHolder'
         settlements:
           type: array
           items:
             $ref: '#/components/schemas/settlement'
         financial:
           $ref: '#/components/schemas/financial'
+        stockHolders:
+          type: array
+          items:
+            $ref: '#/components/schemas/stockHolder'
         futures:
           type: array
           items:
@@ -177,51 +168,56 @@ components:
           example: 1
     company:
       type: object
+      summary: 会社情報
       properties:
         primaryIndustry:
           type: string
-          example: 'B'
+          description: 業種・大分類（別途、早見表を参照してください）
         secondaryIndustry:
           type: string
-          example: '31'
+          description: 業種・中分類（別途、早見表を参照してください）
         tertiaryIndustry:
           type: string
-          example: '311'
+          description: 業種・小分類（別途、早見表を参照してください）
         allStock:
           type: integer
-        latestAsset:
+          description: 発行済株式数・全株式
+        treasuryStock:
           type: integer
-          example: 9
-        latestDebt:
-          type: integer
-          example: 0
-        latestSales:
-          type: integer
-          example: 0
-        fulltimeNumber:
-          type: integer
-          example: 0
-        parttimeNumber:
-          type: integer
-          example: 0
+          description: 発行済株式数・自己株式
     settlement:
       type: object
       properties:
+        asset:
+          type: integer
+          description: 資産額（千円）
+        debt:
+          type: integer
+          description: 負債額（千円）
+        sales:
+          type: integer
+          description: 売上額（千円）
+        fulltimeNumber:
+          type: integer
+          description: 従業員数（正社員）
+        parttimeNumber:
+          type: integer
+          description: 従業員数（パート）
         dividend:
           type: integer
-          example: 0
+          description: 配当支払い額（千円）
         income:
           type: integer
-          example: 0
+          description: 課税所得（千円）
         lossDeduction:
           type: integer
-          example: 0
+          description: 繰越欠損金の控除額（千円）
         capital:
           type: integer
-          example: 0
+          description: 資本金等の額（千円）
         profitReserve:
           type: integer
-          example: 0
+          description: 利益積立金額（千円）
     future:
       type: object
       properties:
@@ -307,6 +303,60 @@ components:
           items:
             type: number
             example: [0.0, 0.0, 0.0]
+  responses:
+    response200_calculation:
+      description: Successful response
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/response_ok_check_required_prev3'
+          examples:
+            example1:
+              $ref: '#/components/examples/response_example1'
+            example2:
+              $ref: '#/components/examples/response_example2'
+    response400:
+      description: 入力値のエラーや違反です。具体的なパラメータに言及します。
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: 'invalid primaryIndustry'
+    response401:
+      description: 認証のエラーや違反です。一律「invalid authentication」を返却します。
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: 'invalid primaryIndustry'
+    response500:
+      description: API内部のエラーです。一律「internal server error」を返却します。
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              error:
+                type: string
+                example: 'internal server error'
+    error401:
+      type: object
+      properties:
+        error:
+          type: string
+          description:
+    error500:
+      type: object
+      properties:
+        error:
+          type: string
+          description: サーバー内部のエラーです。一律「internal server error」を返却します。
   examples:
     example_check_required_prev3_true:
       summary: 前三期分のデータが必要
@@ -320,16 +370,44 @@ components:
           isFoundedRecently: false
           isGoingClose: false
           isOverHalfStock: false
-          latestAsset: 30000
-          latestDebt: 10000
-          latestSales: 50000
-          fulltimeNumber: 0
-          parttimeNumber: 0
         settlements:
           [
-            { dividend: 0, income: 0, lossDeduction: 0, capital: 1000, profitReserve: 0 },
-            { dividend: 0, income: 0, lossDeduction: 0, capital: 1000, profitReserve: 0 },
-            { dividend: 0, income: 0, lossDeduction: 0, capital: 1000, profitReserve: 0 },
+            {
+              asset: 30000,
+              debt: 10000,
+              sales: 50000,
+              fulltimeNumber: 0,
+              parttimeNumber: 0,
+              dividend: 0,
+              income: 0,
+              lossDeduction: 0,
+              capital: 1000,
+              profitReserve: 0,
+            },
+            {
+              asset: 30000,
+              debt: 10000,
+              sales: 50000,
+              fulltimeNumber: 0,
+              parttimeNumber: 0,
+              dividend: 0,
+              income: 0,
+              lossDeduction: 0,
+              capital: 1000,
+              profitReserve: 0,
+            },
+            {
+              asset: 30000,
+              debt: 10000,
+              sales: 50000,
+              fulltimeNumber: 0,
+              parttimeNumber: 0,
+              dividend: 0,
+              income: 0,
+              lossDeduction: 0,
+              capital: 1000,
+              profitReserve: 0,
+            },
           ]
     example_check_required_prev3_false:
       summary: 前三期分のデータが必要ではない
@@ -343,22 +421,44 @@ components:
           isFoundedRecently: false
           isGoingClose: false
           isOverHalfStock: false
-          latestAsset: 80000
-          latestDebt: 30000
-          latestSales: 100000
-          fulltimeNumber: 20
-          parttimeNumber: 0
         settlements:
           [
-            { dividend: 0, income: 10000, lossDeduction: 0, capital: 1000, profitReserve: 268375 },
             {
+              asset: 80000,
+              debt: 30000,
+              sales: 100000,
+              fulltimeNumber: 20,
+              parttimeNumber: 0,
+              dividend: 0,
+              income: 10000,
+              lossDeduction: 0,
+              capital: 1000,
+              profitReserve: 268375,
+            },
+            {
+              asset: 80000,
+              debt: 30000,
+              sales: 100000,
+              fulltimeNumber: 20,
+              parttimeNumber: 0,
               dividend: 1000,
               income: 10000,
               lossDeduction: 0,
               capital: 1000,
               profitReserve: 268375,
             },
-            { dividend: 1000, income: 10000, lossDeduction: 1000, capital: 1000, profitReserve: 0 },
+            {
+              asset: 80000,
+              debt: 30000,
+              sales: 100000,
+              fulltimeNumber: 20,
+              parttimeNumber: 0,
+              dividend: 1000,
+              income: 10000,
+              lossDeduction: 1000,
+              capital: 1000,
+              profitReserve: 0,
+            },
           ]
     response_example1:
       summary: 前三期分のデータが必要
