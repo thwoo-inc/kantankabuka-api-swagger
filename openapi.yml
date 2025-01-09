@@ -238,9 +238,16 @@ components:
     stockHolderForTransitionResponse:
       type: object
       properties:
-        amount:
-          type: integer
-          description: 評価方式に基づいた評価額
+        incomes:
+          type: array
+          items:
+            type: integer
+            description: 予定利益（税引前利益）
+        measures:
+          type: array
+          items:
+            type: integer
+            description: 修正損益（非経常損益）
     future:
       type: object
       properties:
@@ -257,10 +264,100 @@ components:
       properties:
         stockOne:
           type: integer
-          description: 株価（千円）
+          description: 相続税評価額(1株あたり)(円)
         stockAll:
           type: integer
-          description: 株価（千円）
+          description: 相続税評価額(千円)
+        inheritanceTaxOwned:
+          type: integer
+          description: 相続税評価額(保有している株式分)(千円)
+        netAssetValue:
+          type: integer
+          description: 純資産
+        similarValue:
+          type: integer
+          description: 類似業種株価(円)
+        companyScale:
+          type: string
+          description: 会社規模
+        similarRate:
+          type: string
+          description: Lの割合
+        similarIndusties:
+          type: array
+          items:
+            type: integer
+            description: 類似業種番号
+        simulatedAt:
+          type: string
+          description: 試算日時
+        isRatioElementZero:
+          type: boolean
+          description: 比率要素0判定
+        isRatioElementOne:
+          type: boolean
+          description: 比率要素1判定
+        corporateTaxOne:
+          type: integer
+          description: 法人税評価額(1株あたり)(円)
+        corporateTaxAll:
+          type: integer
+          description: 法人税評価額(千円)
+        corporateTaxRate:
+          type: number
+          description: 法人税比率
+        dividendDiscountOne:
+          type: integer
+          description: 配当還元価額(1株あたり)(円)
+        dividendDiscountAll:
+          type: integer
+          description: 配当還元価額(千円)
+        inheritanceTaxBasedOnStock:
+          type: integer
+          description: 相続税(千円)
+    transitionResult:
+      type: object
+      properties:
+        companyScales:
+          type: array
+          items:
+            type: string
+            description: 会社規模
+        netAssetValues:
+          type: array
+          items:
+            type: number
+            description: 純資産
+        similarValues:
+          type: array
+          items:
+            type: number
+            description: 類似業務科学
+        similarRates:
+          type: array
+          items:
+            type: number
+            description: Lの割合
+        inheritanceTaxOnes:
+          type: array
+          items:
+            type: number
+            description: 相続税評価額(1株あたり)(円)
+        inheritanceTaxAlls:
+          type: array
+          items:
+            type: integer
+            description: 相続税評価額(千円)
+        corporateTaxOnes:
+          type: array
+          items:
+            type: number
+            description: 法人税評価額(1株あたり)(円)
+        corporateTaxAlls:
+          type: array
+          items:
+            type: integer
+            description: 法人税評価額(千円)
   responses:
     response200_check_required_prev3:
       description: check_required_prev3の正常系レスポンスです。
@@ -275,11 +372,15 @@ components:
           schema:
             type: object
             properties:
-              stockOne:
-                type: number
-                example: 5000
-              stockAll:
-                type: number
+              calculationResult:
+                $ref: '#/components/schemas/calculationResult'
+              stockHolders:
+                type: array
+                items:
+                  $ref: '#/components/schemas/stockHolderForCaluculationResponse'
+              simulatorIndustryPeriod:
+                type: string
+                description: 類似業種株価時期
           example: 100000
           examples:
             example1:
@@ -293,16 +394,12 @@ components:
           schema:
             type: object
             properties:
-              companyScales:
+              transitionResult:
+                $ref: '#/components/schemas/transitionResult'
+              stockHolders:
                 type: array
                 items:
-                  type: string
-                example: ['A', 'B', 'C']
-              netAssetValues:
-                type: array
-                items:
-                  type: number
-                  example: [0.0, 0.0, 0.0]
+                  $ref: '#/components/schemas/stockHolderForTransitionResponse'
           examples:
             example1:
               $ref: '#/components/examples/response_example1'
