@@ -20,7 +20,7 @@ paths:
         - $ref: '#/components/parameters/Content-Type'
         - $ref: '#/components/parameters/Kantankabuka-Client-ID'
       requestBody:
-        $ref: '#/components/requestBodies/check_required_prev3_body'
+        $ref: '#/components/requestBodies/body_check_required_prev3'
       responses:
         '200':
           $ref: '#/components/responses/response200_check_required_prev3'
@@ -37,14 +37,10 @@ paths:
         - $ref: '#/components/parameters/Content-Type'
         - $ref: '#/components/parameters/Kantankabuka-Client-ID'
       requestBody:
-        $ref: '#/components/requestBodies/calculation_body'
+        $ref: '#/components/requestBodies/body_calculation'
       responses:
         '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/response_ok_calculation'
+          $ref: '#/components/responses/response200_calculation'
         '400':
           $ref: '#/components/responses/response400'
         '401':
@@ -58,14 +54,10 @@ paths:
         - $ref: '#/components/parameters/Content-Type'
         - $ref: '#/components/parameters/Kantankabuka-Client-ID'
       requestBody:
-        $ref: '#/components/requestBodies/transition_body'
+        $ref: '#/components/requestBodies/body_transition'
       responses:
         '200':
-          description: Successful response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/response_ok_transition'
+          $ref: '#/components/responses/response200_transition'
         '400':
           $ref: '#/components/responses/response400'
         '401':
@@ -88,7 +80,7 @@ components:
       schema:
         type: string
   requestBodies:
-    check_required_prev3_body:
+    body_check_required_prev3:
       required: true
       content:
         application/json:
@@ -106,7 +98,7 @@ components:
               $ref: '#/components/examples/example_check_required_prev3_true'
             example2:
               $ref: '#/components/examples/example_check_required_prev3_false'
-    calculation_body:
+    body_calculation:
       required: true
       content:
         application/json:
@@ -124,8 +116,8 @@ components:
               stockHolders:
                 type: array
                 items:
-                  $ref: '#/components/schemas/stockHolder'
-    transition_body:
+                  $ref: '#/components/schemas/stockHolderForCaluculationParam'
+    body_transition:
       required: true
       content:
         application/json:
@@ -143,11 +135,9 @@ components:
               stockHolders:
                 type: array
                 items:
-                  $ref: '#/components/schemas/stockHolder'
-              futures:
-                type: array
-                items:
-                  $ref: '#/components/schemas/future'
+                  $ref: '#/components/schemas/stockHolderForTransitionParam'
+              future:
+                $ref: '#/components/schemas/future'
               calculationResult:
                 $ref: '#/components/schemas/calculationResult'
   schemas:
@@ -212,55 +202,65 @@ components:
         month:
           type: integer
           description: 決算期の月
-    stockHolder:
+    stockHolderForCaluculationParam:
       type: object
       properties:
         stockNumber:
           type: integer
-          example: 10000
-        stockRate:
-          type: number
-          example: 50.0
+          description: 株数
         evaluationType:
           type: string
-          example: 'A'
+          description: 評価方式（英字）:A,B,C
+    stockHolderForCaluculationResponse:
+      type: object
+      properties:
+        stockNumber:
+          type: integer
+          description: 株数
+        stockRate:
+          type: number
+          description: 株全体比率
+        evaluationType:
+          type: string
+          description: 評価方式（英字）:A,B,C
         evaluationTypeText:
           type: string
-          example: '原則（相続税評価額)'
+          description: 評価方式（日本語単語）：原則（相続税評価額),原則（相続税評価額),特例（配当還元価額）
         amount:
           type: integer
-          example: 500000
+          description: 評価方式に基づいた評価額
+    stockHolderForTransitionParam:
+      type: object
+      properties:
+        stockNumber:
+          type: integer
+          description: 株数
+    stockHolderForTransitionResponse:
+      type: object
+      properties:
+        amount:
+          type: integer
+          description: 評価方式に基づいた評価額
     future:
       type: object
       properties:
-        income:
-          type: integer
-          example: 0
-        measure:
-          type: integer
-          example: 0
+        incomes:
+          type: array
+          items:
+            type: integer
+        measures:
+          type: array
+          items:
+            type: integer
     calculationResult:
       type: object
       properties:
         stockOne:
-          type: number
-          example: 5000
+          type: integer
+          description: 株価（千円）
         stockAll:
-          type: number
-          example: 100000
-    transitionResult:
-      type: object
-      properties:
-        companyScales:
-          type: array
-          items:
-            type: string
-          example: ['A', 'B', 'C']
-        netAssetValues:
-          type: array
-          items:
-            type: number
-            example: [0.0, 0.0, 0.0]
+          type: integer
+          description: 株価（千円）
   responses:
     response200_check_required_prev3:
       description: check_required_prev3の正常系レスポンスです。
@@ -273,7 +273,36 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/response_ok_calculation'
+            type: object
+            properties:
+              stockOne:
+                type: number
+                example: 5000
+              stockAll:
+                type: number
+          example: 100000
+          examples:
+            example1:
+              $ref: '#/components/examples/response_example1'
+            example2:
+              $ref: '#/components/examples/response_example2'
+    response200_transition:
+      description: transitionの正常系レスポンスです。
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              companyScales:
+                type: array
+                items:
+                  type: string
+                example: ['A', 'B', 'C']
+              netAssetValues:
+                type: array
+                items:
+                  type: number
+                  example: [0.0, 0.0, 0.0]
           examples:
             example1:
               $ref: '#/components/examples/response_example1'
