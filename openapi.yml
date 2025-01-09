@@ -20,16 +20,7 @@ paths:
         - $ref: '#/components/parameters/Content-Type'
         - $ref: '#/components/parameters/Kantankabuka-Client-ID'
       requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/body_check_required_prev3'
-            examples:
-              example1:
-                $ref: '#/components/examples/example_check_required_prev3_true'
-              example2:
-                $ref: '#/components/examples/example_check_required_prev3_false'
+        $ref: '#/components/requestBodies/check_required_prev3_body'
       responses:
         '200':
           $ref: '#/components/responses/response200_check_required_prev3'
@@ -46,11 +37,7 @@ paths:
         - $ref: '#/components/parameters/Content-Type'
         - $ref: '#/components/parameters/Kantankabuka-Client-ID'
       requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/body_calculation'
+        $ref: '#/components/requestBodies/calculation_body'
       responses:
         '200':
           description: Successful response
@@ -71,11 +58,7 @@ paths:
         - $ref: '#/components/parameters/Content-Type'
         - $ref: '#/components/parameters/Kantankabuka-Client-ID'
       requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/body_transition'
+        $ref: '#/components/requestBodies/transition_body'
       responses:
         '200':
           description: Successful response
@@ -104,61 +87,70 @@ components:
       required: true
       schema:
         type: string
+  requestBodies:
+    check_required_prev3_body:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              company:
+                $ref: '#/components/schemas/company'
+              settlements:
+                type: array
+                items:
+                  $ref: '#/components/schemas/settlement'
+          examples:
+            example1:
+              $ref: '#/components/examples/example_check_required_prev3_true'
+            example2:
+              $ref: '#/components/examples/example_check_required_prev3_false'
+    calculation_body:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              company:
+                $ref: '#/components/schemas/company'
+              settlements:
+                type: array
+                items:
+                  $ref: '#/components/schemas/settlement'
+              financial:
+                $ref: '#/components/schemas/financial'
+              stockHolders:
+                type: array
+                items:
+                  $ref: '#/components/schemas/stockHolder'
+    transition_body:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              company:
+                $ref: '#/components/schemas/company'
+              settlements:
+                type: array
+                items:
+                  $ref: '#/components/schemas/settlement'
+              financial:
+                $ref: '#/components/schemas/financial'
+              stockHolders:
+                type: array
+                items:
+                  $ref: '#/components/schemas/stockHolder'
+              futures:
+                type: array
+                items:
+                  $ref: '#/components/schemas/future'
+              calculationResult:
+                $ref: '#/components/schemas/calculationResult'
   schemas:
-    body_check_required_prev3:
-      type: object
-      properties:
-        company:
-          $ref: '#/components/schemas/company'
-        settlements:
-          type: array
-          items:
-            $ref: '#/components/schemas/settlement'
-    body_calculation:
-      type: object
-      properties:
-        company:
-          $ref: '#/components/schemas/company'
-        settlements:
-          type: array
-          items:
-            $ref: '#/components/schemas/settlement'
-        financial:
-          $ref: '#/components/schemas/financial'
-        stockHolders:
-          type: array
-          items:
-            $ref: '#/components/schemas/stockHolder'
-    body_transition:
-      type: object
-      properties:
-        company:
-          $ref: '#/components/schemas/company'
-        settlements:
-          type: array
-          items:
-            $ref: '#/components/schemas/settlement'
-        financial:
-          $ref: '#/components/schemas/financial'
-        stockHolders:
-          type: array
-          items:
-            $ref: '#/components/schemas/stockHolder'
-        futures:
-          type: array
-          items:
-            $ref: '#/components/schemas/future'
-        calculationResult:
-          $ref: '#/components/schemas/calculationResult'
-    financial:
-      type: object
-      properties:
-        year:
-          type: integer
-          example: 2025
-        month:
-          type: integer
-          example: 1
     company:
       type: object
       summary: 会社情報
@@ -211,15 +203,15 @@ components:
         profitReserve:
           type: integer
           description: 利益積立金額（千円）
-    future:
+    financial:
       type: object
       properties:
-        income:
+        year:
           type: integer
-          example: 0
-        measure:
+          description: 決算期の年
+        month:
           type: integer
-          example: 0
+          description: 決算期の月
     stockHolder:
       type: object
       properties:
@@ -238,42 +230,15 @@ components:
         amount:
           type: integer
           example: 500000
-    response_ok_check_required_prev3:
+    future:
       type: object
       properties:
-        message:
-          type: string
-          example: 'Calculation successful'
-        data:
-          type: object
-          properties:
-            result:
-              type: number
-              example: 123.45
-    response_ok_calculation:
-      type: object
-      properties:
-        calculationResult:
-          $ref: '#/components/schemas/calculationResult'
-        stockHolders:
-          type: array
-          items:
-            $ref: '#/components/schemas/stockHolder'
-        simulatorIndustoryPeriod:
-          type: string
-          example: '2025-01-07T00:00:00Z'
-    response_ok_transition:
-      type: object
-      properties:
-        transitionResult:
-          $ref: '#/components/schemas/transitionResult'
-        stockHolders:
-          type: array
-          items:
-            $ref: '#/components/schemas/stockHolder'
-        simulatorIndustoryPeriod:
-          type: string
-          example: '2025-01-07T00:00:00Z'
+        income:
+          type: integer
+          example: 0
+        measure:
+          type: integer
+          example: 0
     calculationResult:
       type: object
       properties:
