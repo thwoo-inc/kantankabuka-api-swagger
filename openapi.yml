@@ -160,6 +160,18 @@ components:
         treasuryStock:
           type: integer
           description: 発行済株式数・自己株式
+        isGoingClose:
+          type: boolean
+          description: 営業してない状態か
+        isOverHalfStock:
+          type: boolean
+          description: 資産に占める株式の割合が50%以上かどうか
+        foundedYear:
+          type: integer
+          description: 開業年
+        foundedMonth:
+          type: integer
+          description: 開業月
     settlement:
       type: object
       properties:
@@ -364,7 +376,16 @@ components:
       content:
         application/json:
           schema:
-            type: boolean
+            type: object
+            properties:
+              result:
+                type: boolean
+                description: 前三期分のデータが必要かどうか
+          examples:
+            example1:
+              $ref: '#/components/examples/response_example1'
+            example2:
+              $ref: '#/components/examples/response_example2'
     response200_calculation:
       description: calculationの正常系レスポンスです。
       content:
@@ -381,12 +402,6 @@ components:
               simulatorIndustryPeriod:
                 type: string
                 description: 類似業種株価時期
-          example: 100000
-          examples:
-            example1:
-              $ref: '#/components/examples/response_example1'
-            example2:
-              $ref: '#/components/examples/response_example2'
     response200_transition:
       description: transitionの正常系レスポンスです。
       content:
@@ -400,11 +415,6 @@ components:
                 type: array
                 items:
                   $ref: '#/components/schemas/stockHolderForTransitionResponse'
-          examples:
-            example1:
-              $ref: '#/components/examples/response_example1'
-            example2:
-              $ref: '#/components/examples/response_example2'
     response400:
       description: 入力値のエラーや違反です。具体的なパラメータに言及します。
       content:
@@ -457,9 +467,10 @@ components:
           tertiaryIndustry: ''
           allStock: 10000
           treasuryStock: 0
-          isFoundedRecently: false
           isGoingClose: false
           isOverHalfStock: false
+          foundedYear: 2020
+          foundedMonth: 1
         settlements:
           [
             {
@@ -508,9 +519,10 @@ components:
           tertiaryIndustry: ''
           allStock: 10000
           treasuryStock: 0
-          isFoundedRecently: false
           isGoingClose: false
           isOverHalfStock: false
+          foundedYear: 2020
+          foundedMonth: 1
         settlements:
           [
             {
