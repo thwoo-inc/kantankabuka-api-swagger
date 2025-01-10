@@ -90,9 +90,7 @@ components:
                 items:
                   $ref: '#/components/schemas/settlement'
           examples:
-            example1:
-              $ref: '#/components/examples/example_check_required_prev3_true'
-            example2:
+            example:
               $ref: '#/components/examples/example_check_required_prev3_false'
     body_calculation:
       required: true
@@ -113,6 +111,9 @@ components:
                 type: array
                 items:
                   $ref: '#/components/schemas/stockHolderForCaluculationParam'
+          examples:
+            example:
+              $ref: '#/components/examples/example_calculation'
     body_transition:
       required: true
       content:
@@ -450,60 +451,8 @@ components:
                 type: string
                 example: 'internal server error'
   examples:
-    example_check_required_prev3_true:
-      summary: 前三期分のデータが必要
-      value:
-        company:
-          primaryIndustry: 'K'
-          secondaryIndustry: '69'
-          tertiaryIndustry: ''
-          allStock: 10000
-          treasuryStock: 0
-          isGoingClose: false
-          isOverHalfStock: false
-          foundedYear: 2020
-          foundedMonth: 1
-        settlements:
-          [
-            {
-              asset: 30000,
-              debt: 10000,
-              sales: 50000,
-              fulltimeNumber: 0,
-              parttimeNumber: 0,
-              dividend: 0,
-              income: 0,
-              lossDeduction: 0,
-              capital: 1000,
-              profitReserve: 0,
-            },
-            {
-              asset: 30000,
-              debt: 10000,
-              sales: 50000,
-              fulltimeNumber: 0,
-              parttimeNumber: 0,
-              dividend: 0,
-              income: 0,
-              lossDeduction: 0,
-              capital: 1000,
-              profitReserve: 0,
-            },
-            {
-              asset: 30000,
-              debt: 10000,
-              sales: 50000,
-              fulltimeNumber: 0,
-              parttimeNumber: 0,
-              dividend: 0,
-              income: 0,
-              lossDeduction: 0,
-              capital: 1000,
-              profitReserve: 0,
-            },
-          ]
     example_check_required_prev3_false:
-      summary: 前三期分のデータが必要ではない
+      summary: 三期分チェック（false）
       value:
         company:
           primaryIndustry: 'K'
@@ -550,6 +499,58 @@ components:
               dividend: 1000,
               income: 10000,
               lossDeduction: 1000,
+              capital: 1000,
+              profitReserve: 0,
+            },
+          ]
+    example_calculation:
+      summary: 試算サンプル
+      value:
+        company:
+          primaryIndustry: 'K'
+          secondaryIndustry: '69'
+          tertiaryIndustry: ''
+          allStock: 10000
+          treasuryStock: 0
+          isGoingClose: false
+          isOverHalfStock: false
+          foundedYear: 2020
+          foundedMonth: 1
+        settlements:
+          [
+            {
+              asset: 30000,
+              debt: 10000,
+              sales: 50000,
+              fulltimeNumber: 0,
+              parttimeNumber: 0,
+              dividend: 0,
+              income: 0,
+              lossDeduction: 0,
+              capital: 1000,
+              profitReserve: 0,
+            },
+            {
+              asset: 30000,
+              debt: 10000,
+              sales: 50000,
+              fulltimeNumber: 0,
+              parttimeNumber: 0,
+              dividend: 0,
+              income: 0,
+              lossDeduction: 0,
+              capital: 1000,
+              profitReserve: 0,
+            },
+            {
+              asset: 30000,
+              debt: 10000,
+              sales: 50000,
+              fulltimeNumber: 0,
+              parttimeNumber: 0,
+              dividend: 0,
+              income: 0,
+              lossDeduction: 0,
               capital: 1000,
               profitReserve: 0,
             },
