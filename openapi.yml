@@ -4,12 +4,8 @@ info:
   description: リクエストにはクライアントIDとクライアントシークレットを用いたがJWT認証が必要です
   version: 1.0.0
 servers:
-  - url: https://kantankabuka-external-api-722937962589.asia-northeast1.run.app/v1
-    description: Tendems
-  - url: https://external-api-tandems.kantankabuka.com/v1
-    description: Tendems
-  - url: http://localhost:8080/v1
-    description: Local server
+  - url: https://external-api-dev.kantankabuka.com/v1
+    description: 検証環境（まだ稼働していません）
 security:
   - BearerAuth: [] # 全体にJWT認証を要求する設定
 paths:
@@ -210,10 +206,10 @@ components:
       properties:
         year:
           type: integer
-          description: 決算期の年
+          description: 試算の対象とする直近の決算期の年
         month:
           type: integer
-          description: 決算期の月
+          description: 試算の対象とする直近の決算期の月
     stockHolderForCaluculationParam:
       type: object
       properties:
@@ -222,7 +218,8 @@ components:
           description: 株数
         evaluationType:
           type: string
-          description: 評価方式（英字）:A,B,C
+          description: 評価方式（英字）
+          enum: [A, B, C]
     stockHolderForCaluculationResponse:
       type: object
       properties:
@@ -234,10 +231,12 @@ components:
           description: 株全体比率
         evaluationType:
           type: string
-          description: 評価方式（英字）:A,B,C
+          description: 評価方式（英字）
+          enum: [A, B, C]
         evaluationTypeText:
           type: string
-          description: 評価方式（日本語単語）：原則（相続税評価額),原則（相続税評価額),特例（配当還元価額）
+          description: 評価方式（日本語単語）
+          enum: [原則（相続税評価額), 原則（相続税評価額), 特例（配当還元価額）]
         amount:
           type: integer
           description: 評価方式に基づいた評価額
@@ -250,6 +249,19 @@ components:
     stockHolderForTransitionResponse:
       type: object
       properties:
+        inheritanceTaxes:
+          type: array
+          items:
+            type: integer
+            description: 相続税評価額
+        corporateTaxes:
+          type: array
+          items:
+            type: integer
+            description: 法人税評価額
+    future:
+      type: object
+      properties:
         incomes:
           type: array
           items:
@@ -260,17 +272,6 @@ components:
           items:
             type: integer
             description: 修正損益（非経常損益）
-    future:
-      type: object
-      properties:
-        incomes:
-          type: array
-          items:
-            type: integer
-        measures:
-          type: array
-          items:
-            type: integer
     calculationResult:
       type: object
       properties:
@@ -415,6 +416,9 @@ components:
                 type: array
                 items:
                   $ref: '#/components/schemas/stockHolderForTransitionResponse'
+              simulatorIndustryPeriod:
+                type: string
+                description: 類似業種株価時期
     response400:
       description: 入力値のエラーや違反です。具体的なパラメータに言及します。
       content:
@@ -445,18 +449,6 @@ components:
               error:
                 type: string
                 example: 'internal server error'
-    error401:
-      type: object
-      properties:
-        error:
-          type: string
-          description:
-    error500:
-      type: object
-      properties:
-        error:
-          type: string
-          description: サーバー内部のエラーです。一律「internal server error」を返却します。
   examples:
     example_check_required_prev3_true:
       summary: 前三期分のデータが必要
