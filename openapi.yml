@@ -6,6 +6,8 @@ info:
 servers:
   - url: https://external-api-dev.kantankabuka.com/v1
     description: 検証環境（提携企業様はこちらをお使いください）
+  - url: https://external-api-tandems.kantankabuka.com/v1
+    description: ジダイオ社開発環境（ジダイオ社が開発の作業確認用です）
 security:
   - BearerAuth: [] # 全体にJWT認証を要求する設定
 paths:
