@@ -139,6 +139,9 @@ components:
                 $ref: '#/components/schemas/future'
               calculationResult:
                 $ref: '#/components/schemas/calculationResult'
+          examples:
+            example:
+              $ref: '#/components/examples/example_transition'
   schemas:
     company:
       type: object
@@ -297,9 +300,9 @@ components:
           type: string
           description: 会社規模
         similarRate:
-          type: string
+          type: number
           description: Lの割合
-        similarIndusties:
+        similarIndustries:
           type: array
           items:
             type: integer
@@ -331,6 +334,9 @@ components:
         inheritanceTaxBasedOnStock:
           type: integer
           description: 相続税(千円)
+        ownedStockAll:
+          type: integer
+          description: // 財産総額(千円)
     transitionResult:
       type: object
       properties:
@@ -459,7 +465,7 @@ components:
         company:
           primaryIndustry: 'K'
           secondaryIndustry: '69'
-          tertiaryIndustry: ''
+          tertiaryIndustry: '691'
           allStock: 10000
           treasuryStock: 0
           isGoingClose: false
@@ -492,26 +498,17 @@ components:
               capital: 1000,
               profitReserve: 268375,
             },
-            {
-              asset: 80000,
-              debt: 30000,
-              sales: 100000,
-              fulltimeNumber: 20,
-              parttimeNumber: 0,
-              dividend: 1000,
-              income: 10000,
-              lossDeduction: 1000,
-              capital: 1000,
-              profitReserve: 0,
-            },
           ]
+        financial:
+          year: 2020
+          month: 3
     example_calculation:
       summary: 試算サンプル
       value:
         company:
           primaryIndustry: 'K'
           secondaryIndustry: '69'
-          tertiaryIndustry: ''
+          tertiaryIndustry: '691'
           allStock: 10000
           treasuryStock: 0
           isGoingClose: false
@@ -557,6 +554,93 @@ components:
               profitReserve: 0,
             },
           ]
+        financial:
+          year: 2020
+          month: 3
+        stockHolders:
+          [
+            { stockNumber: 1000, evaluationType: 'A' },
+            { stockNumber: 1000, evaluationType: 'B' },
+            { stockNumber: 1000, evaluationType: 'C' },
+          ]
+    example_transition:
+      summary: 試算サンプル
+      value:
+        company:
+          primaryIndustry: 'K'
+          secondaryIndustry: '69'
+          tertiaryIndustry: '691'
+          allStock: 10000
+          treasuryStock: 0
+          isGoingClose: false
+          isOverHalfStock: false
+          foundedYear: 2020
+          foundedMonth: 1
+        settlements:
+          [
+            {
+              asset: 30000,
+              debt: 10000,
+              sales: 50000,
+              fulltimeNumber: 0,
+              parttimeNumber: 0,
+              dividend: 0,
+              income: 0,
+              lossDeduction: 0,
+              capital: 1000,
+              profitReserve: 0,
+            },
+            {
+              asset: 30000,
+              debt: 10000,
+              sales: 50000,
+              fulltimeNumber: 0,
+              parttimeNumber: 0,
+              dividend: 0,
+              income: 0,
+              lossDeduction: 0,
+              capital: 1000,
+              profitReserve: 0,
+            },
+            {
+              asset: 30000,
+              debt: 10000,
+              sales: 50000,
+              fulltimeNumber: 0,
+              parttimeNumber: 0,
+              dividend: 0,
+              income: 0,
+              lossDeduction: 0,
+              capital: 1000,
+              profitReserve: 0,
+            },
+          ]
+        financial:
+          year: 2020
+          month: 3
+        stockHolders: [{ stockNumber: 1000 }, { stockNumber: 1000 }, { stockNumber: 1000 }]
+        future:
+          incomes: [10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000, 10000]
+          measures: [0, 0, -25000, 0, 0, 0, 0, 0, 0]
+        calculationResult:
+          stockOne: 2000
+          stockAll: 20000
+          inheritanceTaxOwned: 0
+          netAssetValue: 2000
+          similarValue: 14
+          companyScale: '小会社'
+          similarRate: 0
+          similarIndustries: [94, 92]
+          simulatedAt: '2025-02-04 11:55:39.474240201 +0900 Local'
+          isRatioElementZero: false
+          isRatioElementOne: true
+          corporateTaxOne: 2000
+          corporateTaxAll: 20000
+          corporateTaxRate: 0
+          dividendDiscountOne: 50
+          dividendDiscountAll: 500
+          inheritanceTaxBasedOnStock: 0
+          ownedStockAll: 0
     response_example1:
       summary: 前三期分のデータが必要
       value:
