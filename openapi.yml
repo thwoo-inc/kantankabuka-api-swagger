@@ -412,6 +412,11 @@ components:
               simulatorIndustryPeriod:
                 type: string
                 description: 類似業種株価時期
+              inActiveCompanyReasons:
+                type: array
+                items:
+                  type: string
+                  description: 営業していない理由（開業後3年未満/開業前・休業中・清算中/株式等保有特定会社/比準要素数1/比準要素数0/非該当）
     response200_transition:
       description: transitionの正常系レスポンスです。
       content:
@@ -563,6 +568,7 @@ components:
             { stockNumber: 1000, evaluationType: 'B' },
             { stockNumber: 1000, evaluationType: 'C' },
           ]
+        inActiveCompanyReasons: ['非該当']
     example_transition:
       summary: 試算サンプル
       value:
