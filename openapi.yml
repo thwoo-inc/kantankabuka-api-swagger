@@ -2,7 +2,7 @@ openapi: 3.0.0
 info:
   title: かんたん株価試算 API
   description: リクエストにはクライアントIDとクライアントシークレットを用いたがJWT認証が必要です
-  version: 1.0.0
+  version: 1.0.1
 servers:
   - url: https://external-api-dev.kantankabuka.com/v1
     description: 検証環境（提携企業様はこちらをお使いください）
@@ -337,6 +337,18 @@ components:
         ownedStockAll:
           type: integer
           description: // 財産総額(千円)
+        adoptedIndustry:
+          type: string
+          description: 採用業種名
+        DividendRatio:
+          type: number
+          description: 比準要素 配当
+        ProfitRatio:
+          type: number
+          description: 比準要素 利益
+        NetAssetRatio:
+          type: number
+          description: 比準要素 純資産
     transitionResult:
       type: object
       properties:
@@ -647,6 +659,10 @@ components:
           dividendDiscountAll: 500
           inheritanceTaxBasedOnStock: 0
           ownedStockAll: 0
+          adoptedIndustry: '製造業'
+          DividendRatio: 0.5
+          ProfitRatio: 0.3
+          NetAssetRatio: 0.2
     response_example1:
       summary: 前三期分のデータが必要
       value:
